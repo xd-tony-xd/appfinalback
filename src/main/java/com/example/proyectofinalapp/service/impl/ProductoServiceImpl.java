@@ -25,7 +25,6 @@ public class ProductoServiceImpl implements ProductoService {
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
 
-    // URL BASE
     @Value("${server.port}")
     private String serverPort;
 
@@ -40,14 +39,12 @@ public class ProductoServiceImpl implements ProductoService {
         this.categoriaRepository = categoriaRepository;
     }
 
-    // --------------------------- CREAR SIN IMAGEN ----------------------------
     @Override
     public Producto crearProducto(Producto producto) {
         validarUsuarioYCategoria(producto);
         return productoRepository.save(producto);
     }
 
-    // --------------------------- CREAR CON IMAGEN ----------------------------
     @Override
     public Producto crearProductoConImagen(Producto producto, MultipartFile imagen) {
         validarUsuarioYCategoria(producto);
@@ -60,7 +57,6 @@ public class ProductoServiceImpl implements ProductoService {
         return productoRepository.save(producto);
     }
 
-    // --------------------------- ACTUALIZAR SIN IMAGEN ------------------------
     @Override
     public Producto actualizarProducto(Long id, Producto producto) {
         Producto existente = obtenerPorId(id);
@@ -76,7 +72,6 @@ public class ProductoServiceImpl implements ProductoService {
         return productoRepository.save(existente);
     }
 
-    // --------------------------- ACTUALIZAR CON IMAGEN -----------------------
     @Override
     public Producto actualizarProductoConImagen(Long id, Producto producto, MultipartFile imagen) {
         Producto existente = obtenerPorId(id);
@@ -93,7 +88,6 @@ public class ProductoServiceImpl implements ProductoService {
         return productoRepository.save(existente);
     }
 
-    // --------------------------- COPIAR CAMPOS --------------------------------
     private void copiarCampos(Producto origen, Producto destino) {
         destino.setTitulo(origen.getTitulo());
         destino.setDescripcion(origen.getDescripcion());
@@ -105,7 +99,6 @@ public class ProductoServiceImpl implements ProductoService {
         destino.setLongitud(origen.getLongitud());
     }
 
-    // --------------------------- VALIDACIONES ---------------------------------
     private void validarUsuarioYCategoria(Producto producto) {
 
         Long usuarioId = producto.getUsuario().getId();
@@ -124,10 +117,10 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
-    // --------------------------- GUARDAR IMAGEN (CORREGIDO) -------------------
     private String guardarImagen(MultipartFile archivo) {
 
         try {
+            // Carpeta interna del contenedor
             String uploadDir = System.getProperty("user.dir") + "/uploads/";
 
             File directorio = new File(uploadDir);
@@ -140,7 +133,7 @@ public class ProductoServiceImpl implements ProductoService {
 
             Files.copy(archivo.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
 
-            // URL CORRECTA SIN DOBLE PUERTO
+            // URL pública que funciona en KOYEB
             return serverHost + ":" + serverPort + "/uploads/" + nombreArchivo;
 
         } catch (Exception e) {
@@ -148,7 +141,6 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
-    // --------------------------- CRUD -----------------------------------------
     @Override
     public Producto obtenerPorId(Long id) {
         return productoRepository.findById(id)
