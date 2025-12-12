@@ -25,9 +25,6 @@ public class ProductoServiceImpl implements ProductoService {
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
 
-    @Value("${server.port}")
-    private String serverPort;
-
     @Value("${app.host}")
     private String serverHost;
 
@@ -100,7 +97,6 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     private void validarUsuarioYCategoria(Producto producto) {
-
         Long usuarioId = producto.getUsuario().getId();
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -133,8 +129,8 @@ public class ProductoServiceImpl implements ProductoService {
 
             Files.copy(archivo.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
 
-            // URL pública que funciona en KOYEB
-            return serverHost + ":" + serverPort + "/uploads/" + nombreArchivo;
+            // URL pública correcta en KOYEB (SIN PUERTO)
+            return serverHost + "/uploads/" + nombreArchivo;
 
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar la imagen: " + e.getMessage());
