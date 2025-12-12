@@ -25,11 +25,11 @@ public class ProductoServiceImpl implements ProductoService {
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
 
-    // ✔ URL BASE PARA LOS ARCHIVOS
+    // URL BASE
     @Value("${server.port}")
     private String serverPort;
 
-    @Value("${app.host:http://localhost}")
+    @Value("${app.host}")
     private String serverHost;
 
     public ProductoServiceImpl(ProductoRepository productoRepository,
@@ -124,27 +124,23 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
 
-    // --------------------------- GUARDAR IMAGEN --------------------------------
+    // --------------------------- GUARDAR IMAGEN (CORREGIDO) -------------------
     private String guardarImagen(MultipartFile archivo) {
 
         try {
-            // Carpeta dentro del proyecto
             String uploadDir = System.getProperty("user.dir") + "/uploads/";
 
-            // Crear carpeta si no existe
             File directorio = new File(uploadDir);
             if (!directorio.exists()) {
                 directorio.mkdirs();
             }
 
-            // Nombre único
             String nombreArchivo = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
             Path ruta = Paths.get(uploadDir + nombreArchivo);
 
-            // Guardar archivo
             Files.copy(archivo.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
 
-            // ✔ URL PÚBLICA
+            // URL CORRECTA SIN DOBLE PUERTO
             return serverHost + ":" + serverPort + "/uploads/" + nombreArchivo;
 
         } catch (Exception e) {
